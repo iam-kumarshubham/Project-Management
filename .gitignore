@@ -1,0 +1,36 @@
+# Global
+.env
+*.env
+.DS_Store
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.log
+
+# Python / FastAPI
+backend/__pycache__/
+backend/.venv/
+backend/.mypy_cache/
+backend/.pytest_cache/
+backend/.coverage
+backend/instance/
+backend/alembic/versions/
+
+# Node / React
+frontend/node_modules/
+frontend/.parcel-cache/
+frontend/.next/
+frontend/dist/
+frontend/build/
+frontend/.env.local
+frontend/.env.*.local
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# OS generated
+Thumbs.db
+ehthumbs.db
+desktop.ini
