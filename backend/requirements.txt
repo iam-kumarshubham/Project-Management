@@ -1,7 +1,8 @@
 fastapi
 uvicorn
 sqlmodel
-python-jose
+python-jose[cryptography]
 passlib[bcrypt]
 python-dotenv
-asyncpg  # for PostgreSQL
+aiosqlite  # for SQLite async support
+email-validator  # for Pydantic email validation
