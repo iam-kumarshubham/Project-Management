@@ -3,10 +3,10 @@ from sqlmodel import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
-from backend.database import get_session
-from backend.models.user import User
-from backend.schemas.user import UserCreate, UserRead, UserLogin
-from backend.auth import get_current_user
+from database import get_session
+from models.user import User
+from schemas.user import UserCreate, UserRead, UserLogin
+from auth import get_current_user
 from core.security import verify_password, get_password_hash, create_access_token
 
 router = APIRouter()
@@ -18,8 +18,8 @@ async def signup(user_data: UserCreate, session: AsyncSession = Depends(get_sess
     statement = select(User).where(
         (User.username == user_data.username) | (User.email == user_data.email)
     )
-    result = await session.exec(statement)
-    existing_user = result.first()
+    result = await session.execute(statement)
+    existing_user = result.scalars().first()
     
     if existing_user:
         raise HTTPException(
@@ -57,8 +57,8 @@ async def login(user_data: UserLogin, session: AsyncSession = Depends(get_sessio
     """Login user and return JWT token"""
     # Find user by username
     statement = select(User).where(User.username == user_data.username)
-    result = await session.exec(statement)
-    user = result.first()
+    result = await session.execute(statement)
+    user = result.scalars().first()
     
     if not user or not verify_password(user_data.password, user.hashed_password):
         raise HTTPException(
@@ -96,8 +96,8 @@ async def get_users(
 ):
     """Get all users (protected route)"""
     statement = select(User)
-    result = await session.exec(statement)
-    users = result.all()
+    result = await session.execute(statement)
+    users = result.scalars().all()
     
     return [UserRead(
         id=user.id,

@@ -3,11 +3,11 @@ from sqlmodel import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
-from backend.database import get_session
-from backend.models.project import Project
-from backend.models.user import User
-from backend.schemas.project import ProjectCreate, ProjectRead
-from backend.auth import get_current_user
+from database import get_session
+from models.project import Project
+from models.user import User
+from schemas.project import ProjectCreate, ProjectRead
+from auth import get_current_user
 
 router = APIRouter()
 
@@ -42,8 +42,8 @@ async def get_projects(
 ):
     """Get all projects for the current user"""
     statement = select(Project).where(Project.owner_id == current_user.id)
-    result = await session.exec(statement)
-    projects = result.all()
+    result = await session.execute(statement)
+    projects = result.scalars().all()
     
     return [ProjectRead(
         id=project.id,
@@ -63,8 +63,8 @@ async def get_project(
         Project.id == project_id,
         Project.owner_id == current_user.id
     )
-    result = await session.exec(statement)
-    project = result.first()
+    result = await session.execute(statement)
+    project = result.scalars().first()
     
     if not project:
         raise HTTPException(
@@ -91,8 +91,8 @@ async def update_project(
         Project.id == project_id,
         Project.owner_id == current_user.id
     )
-    result = await session.exec(statement)
-    project = result.first()
+    result = await session.execute(statement)
+    project = result.scalars().first()
     
     if not project:
         raise HTTPException(
@@ -124,8 +124,8 @@ async def delete_project(
         Project.id == project_id,
         Project.owner_id == current_user.id
     )
-    result = await session.exec(statement)
-    project = result.first()
+    result = await session.execute(statement)
+    project = result.scalars().first()
     
     if not project:
         raise HTTPException(

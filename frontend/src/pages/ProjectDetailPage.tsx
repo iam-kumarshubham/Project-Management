@@ -10,7 +10,7 @@ import { Plus } from "lucide-react";
 
 const statuses = ["To Do", "In Progress", "Done"];
 
-const ProjectDetailPage: React.FC = () => {
+const ProjectDetailPage: React.FC = () => {
   const { id } = useParams();
   const projectId = Number(id);
   const navigate = useNavigate();
@@ -31,14 +31,14 @@ const ProjectDetailPage: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingIssue, setEditingIssue] = useState<any>(null);
 
-  useEffect(() => {
+  useEffect(() => {
     if (projectId) {
       fetchProject(projectId);
       fetchIssues(projectId);
     }
   }, [projectId, fetchProject, fetchIssues]);
 
-  const onDrop = (status: string, item: { id: number }) => {
+  const onDrop = (status: string, item: { id: number }) => {
     moveIssue(item.id, status);
   };
 
@@ -77,18 +77,28 @@ const ProjectDetailPage: React.FC = () => {
     <div className="bg-gray-50 min-h-screen">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <button
             onClick={() => navigate(-1)}
-            className="mt-4 text-blue-600 hover:underline"
+            className="mt-4 text-blue-600 hover:underline font-medium"
           >
-            Back to Projects
+            ← Back to Projects
           </button>
-          <div className="flex justify-between mt-8 mb-4">
-            <h1 className="text-2xl font-bold text-gray-900">{currentProject?.name || "Loading..."}</h1>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-6 gap-4">
+            <div>
+              <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">
+                {currentProject?.name || "Loading..."}
+              </h1>
+              {currentProject?.description && (
+                <p className="text-gray-600 mt-2 text-sm lg:text-base">{currentProject.description}</p>
+              )}
+            </div>
             <button
-              onClick={() => { setEditingIssue(null); setShowModal(true); }}
-              className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+              onClick={() => {
+                setEditingIssue(null);
+                setShowModal(true);
+              }}
+              className="flex items-center bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 font-medium text-sm lg:text-base transition-colors shadow-sm"
             >
               <Plus className="h-5 w-5 mr-2" />
               New Issue
@@ -99,32 +109,49 @@ const ProjectDetailPage: React.FC = () => {
 
       {/* Error Message */}
       {error && (
-        <div className="mb-4 p-4 text-sm text-red-700 bg-red-100 border border-red-300 rounded-md">
-          {error}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-4">
+          <div className="p-4 text-sm text-red-700 bg-red-100 border border-red-300 rounded-md">
+            {error}
+          </div>
         </div>
       )}
 
       {/* Drag-and-Drop Kanban Board */}
       <DndProvider backend={HTML5Backend}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div ref={dropToDo} className="bg-gray-100 rounded-lg p-4 min-h-[300px]">
-              <h3 className="text-lg font-semibold mb-3">To Do</h3>
-              {issues.filter((issue) => issue.status === "To Do").map((issue) => (
-                <IssueCard key={issue.id} issue={issue} onEdit={handleEdit} onDelete={handleDelete} />
-              ))}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+            <div ref={dropToDo} className="bg-gray-100 rounded-lg p-4 lg:p-6 min-h-[500px] lg:min-h-[600px]">
+              <h3 className="text-lg lg:text-xl font-semibold mb-4 text-gray-800 flex items-center">
+                <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                To Do
+              </h3>
+              <div className="space-y-3 lg:space-y-4">
+                {issues.filter((issue) => issue.status === "To Do").map((issue) => (
+                  <IssueCard key={issue.id} issue={issue} onEdit={handleEdit} onDelete={handleDelete} />
+                ))}
+              </div>
             </div>
-            <div ref={dropInProgress} className="bg-gray-100 rounded-lg p-4 min-h-[300px]">
-              <h3 className="text-lg font-semibold mb-3">In Progress</h3>
-              {issues.filter((issue) => issue.status === "In Progress").map((issue) => (
-                <IssueCard key={issue.id} issue={issue} onEdit={handleEdit} onDelete={handleDelete} />
-              ))}
+            <div ref={dropInProgress} className="bg-gray-100 rounded-lg p-4 lg:p-6 min-h-[500px] lg:min-h-[600px]">
+              <h3 className="text-lg lg:text-xl font-semibold mb-4 text-gray-800 flex items-center">
+                <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
+                In Progress
+              </h3>
+              <div className="space-y-3 lg:space-y-4">
+                {issues.filter((issue) => issue.status === "In Progress").map((issue) => (
+                  <IssueCard key={issue.id} issue={issue} onEdit={handleEdit} onDelete={handleDelete} />
+                ))}
+              </div>
             </div>
-            <div ref={dropDone} className="bg-gray-100 rounded-lg p-4 min-h-[300px]">
-              <h3 className="text-lg font-semibold mb-3">Done</h3>
-              {issues.filter((issue) => issue.status === "Done").map((issue) => (
-                <IssueCard key={issue.id} issue={issue} onEdit={handleEdit} onDelete={handleDelete} />
-              ))}
+            <div ref={dropDone} className="bg-gray-100 rounded-lg p-4 lg:p-6 min-h-[500px] lg:min-h-[600px]">
+              <h3 className="text-lg lg:text-xl font-semibold mb-4 text-gray-800 flex items-center">
+                <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                Done
+              </h3>
+              <div className="space-y-3 lg:space-y-4">
+                {issues.filter((issue) => issue.status === "Done").map((issue) => (
+                  <IssueCard key={issue.id} issue={issue} onEdit={handleEdit} onDelete={handleDelete} />
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -133,7 +160,10 @@ const ProjectDetailPage: React.FC = () => {
       {/* Issue Modal */}
       <IssueModal
         isOpen={showModal}
-        onClose={() => { setShowModal(false); clearError(); }}
+        onClose={() => {
+          setShowModal(false);
+          clearError();
+        }}
         onSubmit={handleModalSubmit}
         issue={editingIssue}
         projectId={projectId}

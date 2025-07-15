@@ -1,10 +1,15 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+import sys
+import os
 
-from backend.routers import user
-from routers import project, issue
-from backend.database import create_db_and_tables
+# Add current directory to path for imports
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from routers import user, project, issue
+from database import create_db_and_tables
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

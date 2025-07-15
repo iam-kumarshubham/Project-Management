@@ -3,12 +3,12 @@ from sqlmodel import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
-from backend.database import get_session
-from backend.models.issue import Issue
-from backend.models.project import Project
-from backend.models.user import User
-from backend.schemas.issue import IssueCreate, IssueRead
-from backend.auth import get_current_user
+from database import get_session
+from models.issue import Issue
+from models.project import Project
+from models.user import User
+from schemas.issue import IssueCreate, IssueRead
+from auth import get_current_user
 
 router = APIRouter()
 
@@ -24,8 +24,8 @@ async def create_issue(
         Project.id == issue_data.project_id,
         Project.owner_id == current_user.id
     )
-    project_result = await session.exec(project_statement)
-    project = project_result.first()
+    project_result = await session.execute(project_statement)
+    project = project_result.scalars().first()
     
     if not project:
         raise HTTPException(
@@ -68,8 +68,8 @@ async def get_issues_by_project(
         Project.id == project_id,
         Project.owner_id == current_user.id
     )
-    project_result = await session.exec(project_statement)
-    project = project_result.first()
+    project_result = await session.execute(project_statement)
+    project = project_result.scalars().first()
     
     if not project:
         raise HTTPException(
@@ -79,8 +79,8 @@ async def get_issues_by_project(
     
     # Get issues for the project
     statement = select(Issue).where(Issue.project_id == project_id)
-    result = await session.exec(statement)
-    issues = result.all()
+    result = await session.execute(statement)
+    issues = result.scalars().all()
     
     return [IssueRead(
         id=issue.id,
@@ -104,7 +104,7 @@ async def get_issue(
         Issue.id == issue_id,
         Project.owner_id == current_user.id
     )
-    result = await session.exec(statement)
+    result = await session.execute(statement)
     issue_project = result.first()
     
     if not issue_project:
@@ -138,7 +138,7 @@ async def update_issue(
         Issue.id == issue_id,
         Project.owner_id == current_user.id
     )
-    result = await session.exec(statement)
+    result = await session.execute(statement)
     issue_project = result.first()
     
     if not issue_project:
@@ -182,7 +182,7 @@ async def update_issue_status(
         Issue.id == issue_id,
         Project.owner_id == current_user.id
     )
-    result = await session.exec(statement)
+    result = await session.execute(statement)
     issue_project = result.first()
     
     if not issue_project:
@@ -213,7 +213,7 @@ async def delete_issue(
         Issue.id == issue_id,
         Project.owner_id == current_user.id
     )
-    result = await session.exec(statement)
+    result = await session.execute(statement)
     issue_project = result.first()
     
     if not issue_project:

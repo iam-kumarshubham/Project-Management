@@ -4,8 +4,8 @@ from sqlmodel import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
 
-from backend.database import get_session
-from backend.models.user import User
+from database import get_session
+from models.user import User
 from core.security import decode_access_token
 
 security = HTTPBearer()
@@ -34,8 +34,8 @@ async def get_current_user(
         )
     
     statement = select(User).where(User.id == int(user_id))
-    result = await session.exec(statement)
-    user = result.first()
+    result = await session.execute(statement)
+    user = result.scalars().first()
     
     if user is None:
         raise HTTPException(
