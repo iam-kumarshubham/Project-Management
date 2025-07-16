@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { DndProvider, useDrop } from "react-dnd";
+import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { useProjectsStore } from "../store/projectsStore";
 import { useKanbanStore } from "../store/kanbanStore";
-import IssueCard from "../components/IssueCard";
 import IssueModal from "../components/IssueModal";
 import { Plus } from "lucide-react";
-
-const statuses = ["To Do", "In Progress", "Done"];
+import KanbanBoard from "./KanbanBoard";
 
 const ProjectDetailPage: React.FC = () => {
   const { id } = useParams();
@@ -37,14 +35,6 @@ const ProjectDetailPage: React.FC = () => {
       fetchIssues(projectId);
     }
   }, [projectId, fetchProject, fetchIssues]);
-
-  const onDrop = (status: string, item: { id: number }) => {
-    moveIssue(item.id, status);
-  };
-
-  const [, dropToDo] = useDrop(() => ({ accept: "issue", drop: (item: any) => onDrop("To Do", item) }));
-  const [, dropInProgress] = useDrop(() => ({ accept: "issue", drop: (item: any) => onDrop("In Progress", item) }));
-  const [, dropDone] = useDrop(() => ({ accept: "issue", drop: (item: any) => onDrop("Done", item) }));
 
   const handleEdit = (issue: any) => {
     setEditingIssue(issue);
@@ -118,43 +108,12 @@ const ProjectDetailPage: React.FC = () => {
 
       {/* Drag-and-Drop Kanban Board */}
       <DndProvider backend={HTML5Backend}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-            <div ref={dropToDo} className="bg-gray-100 rounded-lg p-4 lg:p-6 min-h-[500px] lg:min-h-[600px]">
-              <h3 className="text-lg lg:text-xl font-semibold mb-4 text-gray-800 flex items-center">
-                <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-                To Do
-              </h3>
-              <div className="space-y-3 lg:space-y-4">
-                {issues.filter((issue) => issue.status === "To Do").map((issue) => (
-                  <IssueCard key={issue.id} issue={issue} onEdit={handleEdit} onDelete={handleDelete} />
-                ))}
-              </div>
-            </div>
-            <div ref={dropInProgress} className="bg-gray-100 rounded-lg p-4 lg:p-6 min-h-[500px] lg:min-h-[600px]">
-              <h3 className="text-lg lg:text-xl font-semibold mb-4 text-gray-800 flex items-center">
-                <div className="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                In Progress
-              </h3>
-              <div className="space-y-3 lg:space-y-4">
-                {issues.filter((issue) => issue.status === "In Progress").map((issue) => (
-                  <IssueCard key={issue.id} issue={issue} onEdit={handleEdit} onDelete={handleDelete} />
-                ))}
-              </div>
-            </div>
-            <div ref={dropDone} className="bg-gray-100 rounded-lg p-4 lg:p-6 min-h-[500px] lg:min-h-[600px]">
-              <h3 className="text-lg lg:text-xl font-semibold mb-4 text-gray-800 flex items-center">
-                <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                Done
-              </h3>
-              <div className="space-y-3 lg:space-y-4">
-                {issues.filter((issue) => issue.status === "Done").map((issue) => (
-                  <IssueCard key={issue.id} issue={issue} onEdit={handleEdit} onDelete={handleDelete} />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+        <KanbanBoard
+          issues={issues}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          moveIssue={moveIssue}
+        />
       </DndProvider>
 
       {/* Issue Modal */}
