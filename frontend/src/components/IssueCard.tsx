@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useDrag } from "react-dnd";
 import { Edit, Trash2, AlertCircle, CheckCircle, Clock } from "lucide-react";
 import type { Issue } from "../types";
@@ -10,6 +10,7 @@ interface Props {
 }
 
 const IssueCard: React.FC<Props> = ({ issue, onEdit, onDelete }) => {
+  const ref = useRef<HTMLDivElement>(null);
   const [{ isDragging }, drag] = useDrag(() => ({
     type: 'issue',
     item: { id: issue.id, status: issue.status },
@@ -17,6 +18,8 @@ const IssueCard: React.FC<Props> = ({ issue, onEdit, onDelete }) => {
       isDragging: monitor.isDragging(),
     }),
   }));
+
+  drag(ref);
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -46,7 +49,7 @@ const IssueCard: React.FC<Props> = ({ issue, onEdit, onDelete }) => {
 
   return (
     <div
-      ref={drag}
+      ref={ref}
       className={`bg-white rounded-lg shadow-sm border p-4 lg:p-5 xl:p-6 mb-3 lg:mb-4 cursor-move transition-all hover:shadow-md lg:hover:shadow-lg xl:hover:shadow-xl group ${
         isDragging ? 'opacity-50 rotate-3' : 'opacity-100'
       }`}
